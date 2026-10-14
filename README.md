@@ -1,119 +1,157 @@
-⛔️ **DEPRECATED** - This project is no longer maintained by the author. If you wish to continue working on this, feel free to fork and continue improving on it.
-
-Thanks for your love and support! 🫶🏻
-
----
-
-[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
-
 # Yoga Guru
 
-<img src="https://github.com/adityaas26/Yoga-Guru/blob/master/screenshots/HomePage.png" alt="Home" height="350"/><img src="https://github.com/adityaas26/Yoga-Guru/blob/master/screenshots/BeginnerPage.png" alt="Beginner" height="350"/><img src="https://github.com/adityaas26/Yoga-Guru/blob/master/screenshots/IntermediatePage.png" alt="Intermediate" height="350"/><img src="https://github.com/adityaas26/Yoga-Guru/blob/master/screenshots/AdvancePage.png" alt="Advance" height="350"/>
+A modern, offline yoga instructor app built with Flutter. Yoga Guru was rebuilt from the
+original 2019 project so it runs on current Flutter and Dart versions with a polished
+Material 3 interface, a guided pose library, timed practice sessions and local progress
+tracking.
 
-<img src="https://github.com/adityaas26/Yoga-Guru/blob/master/screenshots/ProfilePage.png" alt="Profile" height="350"/><img src="https://github.com/adityaas26/Yoga-Guru/blob/master/screenshots/UpdateProfilePage.png" alt="Update Profile" height="350"/><img src="https://github.com/adityaas26/Yoga-Guru/blob/master/screenshots/Inference.png" alt="Inference" height="350"/>
+> Originally based on [adityaas26/Yoga-Guru](https://github.com/adityaas26/Yoga-Guru).
+> The Firebase login, camera and TensorFlow Lite pose-detection code has been removed
+> (see [What changed](#what-changed)) and replaced with a reliable, fully working
+> offline experience.
 
-**Yoga Guru** is your personalized yoga trainer app based on Flutter. It uses posenet, a pre-trained deep learning model, to estimate body poses in real time and predict yoga asanas.
+## Features
 
-## Getting Started
+- **Home** – greeting, today's practice card, featured sessions, beginner/intermediate/
+  advanced levels and popular poses.
+- **Pose library (Explore)** – 14 yoga poses with images, search and difficulty filters.
+- **Pose details** – description, step-by-step instructions, benefits, suggested duration
+  and safety notes.
+- **Camera form check (Android)** – on-device pose detection with Google ML Kit: a live
+  skeleton overlay and geometry-based form scoring for Mountain Pose, Tree Pose and
+  Warrior II (score, per-cue feedback and a good-form hold timer). Other poses show the
+  live skeleton as a mirror guide. Works fully offline; no account or API key.
+- **Guided sessions** – countdown timer with start / pause / resume / reset / skip,
+  current pose cue, next-pose preview and a completion summary screen.
+- **Progress** – completed sessions, total practice time, current streak, daily goal ring,
+  a last-7-days chart and recent session history. All data is stored locally.
+- **Profile & settings** – display name, light/dark/system theme, daily goal and a
+  reset-progress option.
+- **Bottom navigation** – Home, Explore, Progress, Profile, with per-tab state preserved.
 
-### Step 1: Clone the project repository
-Open terminal and type
+Everything works offline. No account, backend, API key or network access is required.
+The camera form check runs entirely on the device with Google ML Kit and is available on
+Android only (the button is hidden on other platforms).
+
+## Requirements
+
+| Tool | Version used and tested |
+| --- | --- |
+| Flutter | 3.47.7 (stable) |
+| Dart | 3.13.5 |
+| JDK | 17+ (Java 25 tested) |
+| Android SDK | Platform 36, Build-Tools 36.0.0 |
+| Android device | Android 7.0 (API 24) or newer |
+
+Dependencies: `shared_preferences` (local storage), `camera` + `google_mlkit_pose_detection`
+(camera form check), `cupertino_icons`. Lints: `flutter_lints`.
+
+## Quick start
 
 ```sh
-git clone https://github.com/adityaas26/Yoga-Guru.git
-```
-
-### Step 2: Run the app
-Connect your device or start the emulator and run the following code
-
-```sh
-# change directories
-cd Yoga-Guru
-
-# gets all the dependencies
+# from the repository root
 flutter pub get
-
-# run the app
-flutter run
+flutter analyze
+flutter test
+flutter run          # with an Android phone connected (USB debugging on)
 ```
 
-## Project Structure
+## Run on a physical Android phone (USB debugging)
 
-The project structure is quite primitive right now. 
+1. On the phone, open **Settings → About phone** and tap **Build number** 7 times to
+   enable Developer options.
+2. Open **Settings → Developer options** and enable **USB debugging**.
+3. Connect the phone with a USB cable and accept the "Allow USB debugging" prompt on
+   the phone.
+4. Verify the device is detected:
 
-<img src="https://github.com/adityaas26/Yoga-Guru/blob/master/screenshots/yoga-guru-project-struct.jpg" alt="project structure" height="650"/>
+   ```sh
+   flutter devices
+   ```
 
-Let's look at the lib folder
+5. Run the app (release build is recommended for smooth performance on a phone):
 
-<img src="https://github.com/adityaas26/Yoga-Guru/blob/master/screenshots/yoga-guru-project-struct-cropped.jpg" alt="project structure" height="400"/>
+   ```sh
+   flutter run --release
+   ```
 
-Don't worry, we'll take a brief look at all the files in a minute! Let's start with **main.dart**
+   Use plain `flutter run` only if you need hot reload during development.
 
-### 1. main.dart
-**main.dart** loads data from shared preferences and the camera module. It also defines routes for **home**, **login** and **register** pages. If the user is already logged in, it sets the initial route to **home.dart** else **login.dart**.
+## Build an installable APK
 
-### 2. login.dart
-**login.dart** defines a *Login* class, which is a stateful widget. It contains the textfields required to login into the app. The Login button calls the *_login()* method which routes to **home.dart**. Also contains a button to send the user to **register.dart**.
+```sh
+flutter build apk --debug     # debug build
+flutter build apk --release   # release build (signed with debug keys)
+```
 
-### 3. register.dart
-**register.dart** defines a *Register* class, which is a stateful widget. It contains the textfields required to login into the app. The Login button calls the *_register()* method which routes to **home.dart**. Also contains a button to send the user to **login.dart**.
+Output path:
 
-<img src="https://github.com/adityaas26/Yoga-Guru/blob/master/screenshots/HomePage.png" alt="Home" align="right" height="300"/>
+```
+build/app/outputs/flutter-apk/app-release.apk
+build/app/outputs/flutter-apk/app-debug.apk
+```
 
-### 4. home.dart
-**home.dart** defines a *Home* class, which is a stateless widget. It contains buttons which routes the user to **poses.dart** according to the button they press. Each button (beginner, intermediate, advance) call a method *_onPoseSelect()*. 
+### Install the APK on the phone
 
-This *_onPoseSelect()* method is quite important as the arguments given to this function decides which list of poses needs to be shown on the poses page.
+Option A – with the phone connected over USB:
 
-<br /><br /><br />
+```sh
+flutter install --release
+```
 
-<img src="https://github.com/adityaas26/Yoga-Guru/blob/master/screenshots/BeginnerPage.png" alt="Beginner" align="left" height="300"/>
+Option B – copy the file manually:
 
-### 5. poses.dart
-**poses.dart** defines a *Poses* class, which is a stateless widget. It shows a list of available poses as [swipable cards](https://pub.dev/packages/flutter_swiper). The code of the custom cards can be found in **yoga_card.dart** file. Each card is clickable and calls the *_onSelect()* method which directs the user to the InferencePage (**inference.dart**).
+1. Transfer `app-release.apk` to the phone (USB cable, Google Drive, etc.).
+2. On the phone, open the APK from **Files** and allow **Install unknown apps**
+   for your file manager when prompted.
+3. Tap **Install**.
 
-<br /><br /><br /><br /><br />
+## Project structure
 
-<img src="https://github.com/adityaas26/Yoga-Guru/blob/master/screenshots/Inference.png" alt="Inference" align="right" height="300"/>
+```
+lib/
+  main.dart                     # entry point
+  app.dart                      # MaterialApp + app scope wiring
+  data/                         # pose library and curated session plans
+  models/                       # YogaPose, YogaSession, SessionRecord
+  screens/                      # home, explore, detail, session, progress, profile, settings
+  services/                     # local storage, app state, inherited scope
+  theme/                        # Material 3 theme (sage green / cream / charcoal)
+  utils/                        # formatters and page transitions
+  widgets/                      # reusable cards, tiles, empty states, progress ring
+assets/
+  poses/                        # 14 pose illustrations (bundled, offline)
+  images/                       # app imagery
+test/                           # unit and widget tests
+```
 
-### 6. inference.dart
-**inference.dart** defines a *InferencePage* class, which is a stateful widget. It is the class which loads the posenet model. It initializes the Camera object with the camera instance and *_setRecognitions()* callback function. The *_setRecognitions()* method is responsibe for saving the predicted output of the PoseNet model into a List (*_recognitions*). This list of predicted values (*_recognitions*) is then passed to **BndBox's** constructor.
+## What changed
 
-You can read more about the implementation [here](https://github.com/shaqian/flutter_tflite#posenet).
+- SDK constraint updated from `>=2.2.2 <3.0.0` to `^3.13.5`; the whole app is null-safe.
+- Removed unmaintained/obsolete dependencies: `firebase_auth`, `cloud_firestore`,
+  `firebase_storage`, `tflite`, `percent_indicator`, `flutter_swiper`, `image_picker`.
+- Removed the Firebase login/register flow (it required a private backend project and
+  `google-services.json`). The profile is now local to the device — no fake login.
+- The original TensorFlow Lite / PoseNet pipeline used the removed Flutter v1 Android
+  embedding and an abandoned `tflite` package, so it could not be kept as-is. It has been
+  replaced with a maintained **Google ML Kit** pose detector (`google_mlkit_pose_detection`,
+  on-device, offline) plus geometry-based form scoring for three poses. No AI feature is
+  claimed to work unless it is implemented.
+- Android files regenerated with the current Flutter template: Gradle 9.3.1,
+  Android Gradle Plugin 9.1.0, Kotlin 2.4.0, `compileSdk`/`targetSdk` 36, `minSdk` 24.
+- Progress, profile and settings persist through `shared_preferences`, with corrupt
+  stored data handled gracefully.
 
-<br /><br />
+## Troubleshooting
 
-### 7. camera.dart
-**camera.dart** defines a *Camera* class, which is a stateful widget. It contains code related to camera initialization and calls *Tflite.runPoseNetOnFrame()* method by passing in the current *CameraImage* as an argument. The output (predictions) of this method is given as an argument to the *_setRecognitions()* method, which was passed to Camera() as callback.
-
-### 8. bndbox.dart
-**bndbox.dart** defines a *BndBox* class, which is a stateless widget. It takes the List of predictions (*_recognitions*) and plot keypoints on the screen. It also prints the accuracy of the model in %.
-
-<img src="https://github.com/adityaas26/Yoga-Guru/blob/master/screenshots/ProfilePage.png" alt="Profile" align="right" height="300"/>
-
-### 9. profile.dart
-**profile.dart** defines a *Profile* class, which is a stateful widget. It contains the code for viewing and updating the user's profile data.
-
-<br /><br /><br /><br /><br /><br />
-
-
-## Support
-
-<a href="https://www.buymeacoffee.com/iBZjXRz" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/purple_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
-
-
-Reach out to me at any of the following platforms:
-- Portfolio Website: [adityasharma.live](https://adityasharma.co)
-- Email: [adityaas26@gmail.com](mailto:adityaas26@gmail.com)
-- Twitter: [@BetaPundit](https://twitter.com/BetaPundit)
-- LinkedIn: [aditya-sharma26](https://www.linkedin.com/in/aditya-sharma26/)
-
-## Resources to help you start
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- `flutter pub get` fails: run `flutter --version` and confirm Flutter 3.47+/Dart 3.13+.
+- First Android build is slow: Gradle and Android dependencies are downloaded once.
+- `sdkmanager` license errors: run
+  `sdkmanager --licenses` (SDK cmdline-tools) and accept all licenses.
+- Gradle error mentioning `llvm-strip` / `llvm-objcopy` / missing NDK: the release
+  build strips the pre-built Flutter engine libraries with the NDK's LLVM tools.
+  Either install the NDK (`sdkmanager --install "ndk;28.2.13676358"`, a large
+  download), or make sure the NDK LLVM tools are available under
+  `<Android SDK>/ndk/28.2.13676358/toolchains/llvm/prebuilt/windows-x86_64/bin/`.
+- Phone not detected: check the USB cable, `adb devices`, and the USB debugging prompt.
+- Uninstall/reset data: clearing app data resets the profile, progress and settings.
